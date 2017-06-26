@@ -1,0 +1,8 @@
+language: java
+jdk: oraclejdk8
+cache:
+  directories:
+    - $HOME/.m2 # caching maven dependencies to speed up the build
+install: true # skipping default install step
+script:
+  - mvn test -Dapi_key=$API_KEY -Dlicense_key=$LICENSE_KEY -B
