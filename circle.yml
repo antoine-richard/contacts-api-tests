@@ -1,0 +1,9 @@
+machine:
+  java:
+    version: openjdk8
+test:
+  override:
+    - mvn test -Dapi_key=$API_KEY -Dlicense_key=$LICENSE_KEY -B
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;

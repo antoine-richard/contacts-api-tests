@@ -1,0 +1,273 @@
+{
+  "front-version": "2.5.0",
+  "version": 3,
+  "nodes": [
+    {
+      "type": "Scenario",
+      "id": "3955119E-576D-48D8-B955-6D3EE7476715",
+      "lastModified": "2017-06-26T19:14:26.376+02:00",
+      "name": "Contact creation flow",
+      "requestOrder": [
+        "Fetch all contacts",
+        "Create a contact",
+        "Check existence of contact",
+        "Clean up contact"
+      ],
+      "parentId": "5A1414D4-77E0-4C2E-877B-1496BFF19093"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "my-company.apispark.net:443",
+        "path": "/v1/contacts/"
+      },
+      "description": "Get the full list of contacts. Resource is paginated.  \nChecks that collection size conforms to associated header.",
+      "id": "DD3C36D3-4F4E-48DA-8DAE-6EA17CC91AA6",
+      "lastModified": "2017-06-26T19:39:11.166+02:00",
+      "name": "Fetch all contacts",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "enabled": true,
+          "name": "Authorization",
+          "value": "${API_KEY}"
+        }
+      ],
+      "assertions": [
+        {
+          "comparison": "Equals",
+          "subject": "ResponseStatus",
+          "path": "code",
+          "value": "200"
+        },
+        {
+          "comparison": "Equals",
+          "subject": "ResponseHeader",
+          "path": "X-Page-Size",
+          "value": "${\"Contacts API\".\"Contact creation flow\".\"Fetch all contacts\".\"response\".\"body\".jsonPath(\"$\").length()}"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|114895169155396127559"
+      },
+      "parentId": "3955119E-576D-48D8-B955-6D3EE7476715"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "multipart/form-data",
+          "items": [
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": ""
+            }
+          ]
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\n  \"firstName\": \"Antoine\",\n  \"lastName\": \"Richard\"\n}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "my-company.apispark.net:443",
+        "path": "/v1/contacts"
+      },
+      "description": "Creates with only firstName and lastName.  \nShould get the resource id in the response (to be reuse later in the scenario).",
+      "id": "688B9AD5-3D2C-4FB7-9921-468EDFF9B843",
+      "lastModified": "2017-06-26T19:39:11.417+02:00",
+      "name": "Create a contact",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Authorization",
+          "value": "${API_KEY}"
+        },
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "assertions": [
+        {
+          "comparison": "Equals",
+          "subject": "ResponseStatus",
+          "path": "code",
+          "value": "200"
+        },
+        {
+          "comparison": "Exists",
+          "subject": "ResponseJsonBody",
+          "path": "$.id",
+          "value": "200"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|114895169155396127559"
+      },
+      "parentId": "3955119E-576D-48D8-B955-6D3EE7476715"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "my-company.apispark.net:443",
+        "path": "/v1/contacts/${\"Contacts API\".\"Contact creation flow\".\"Create a contact\".\"response\".\"body\".jsonPath(\"$.id\")}"
+      },
+      "description": "Fetch by id the contact created in the previous step.  \nEntity should have a firstName and a lastName.",
+      "id": "A650744E-8037-42EF-897C-0C2812248A88",
+      "lastModified": "2017-06-26T19:39:13.680+02:00",
+      "name": "Check existence of contact",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Authorization",
+          "value": "${API_KEY}"
+        }
+      ],
+      "assertions": [
+        {
+          "comparison": "Equals",
+          "subject": "ResponseStatus",
+          "path": "code",
+          "value": "200"
+        },
+        {
+          "comparison": "Equals",
+          "subject": "ResponseJsonBody",
+          "enabled": false,
+          "path": "$.firstName",
+          "value": "Antoine"
+        },
+        {
+          "comparison": "Equals",
+          "subject": "ResponseJsonBody",
+          "enabled": true,
+          "path": "$.lastName",
+          "value": "Richard"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|114895169155396127559"
+      },
+      "parentId": "3955119E-576D-48D8-B955-6D3EE7476715"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.5",
+        "name": "DELETE"
+      },
+      "body": {
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "my-company.apispark.net:443",
+        "path": "/v1/contacts/${\"Contacts API\".\"Contact creation flow\".\"Create a contact\".\"response\".\"body\".jsonPath(\"$.id\")}"
+      },
+      "description": "Clean up the previously created contact, by its id.  \nShould return no content.",
+      "id": "DCB646F9-8E76-4635-B618-E0FFF47E3AA2",
+      "lastModified": "2017-06-26T19:39:15.813+02:00",
+      "name": "Clean up contact",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "enabled": true,
+          "name": "Authorization",
+          "value": "${API_KEY}"
+        }
+      ],
+      "assertions": [
+        {
+          "comparison": "Equals",
+          "subject": "ResponseStatus",
+          "path": "code",
+          "value": "204"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|114895169155396127559"
+      },
+      "parentId": "3955119E-576D-48D8-B955-6D3EE7476715"
+    },
+    {
+      "type": "Project",
+      "id": "5A1414D4-77E0-4C2E-877B-1496BFF19093",
+      "lastModified": "2017-06-26T19:39:15.813+02:00",
+      "name": "Contacts API",
+      "remoteModification": "2017-06-26T17:39:11.379Z"
+    },
+    {
+      "type": "Context",
+      "id": "82782C9B-BFF9-49A3-B69B-E8D6C967EA33",
+      "lastModified": "2017-06-26T19:38:57.626+02:00",
+      "name": "restlet-cloud",
+      "variables": [
+        {
+          "enabled": true,
+          "name": "API_KEY",
+          "value": "RESTLET_CLOUD_API_KEY"
+        }
+      ]
+    }
+  ]
+}

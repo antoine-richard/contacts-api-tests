@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.restlet.client</groupId>
+    <artifactId>data_validation</artifactId>
+    <version>1.0.0</version>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <replace token="RESTLET_CLOUD_API_KEY" value="${api_key}"  dir="${basedir}/target">
+                                    <include name="**/*.json"/>
+                                </replace>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                 <groupId>com.restlet.client</groupId>
+                <artifactId>maven-plugin</artifactId>
+                <version>2.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <file>${basedir}/target/test-classes/contacts-api.json</file>
+                            <selectedEnvironment>restlet-cloud</selectedEnvironment>
+                            <licenseKey>${license_key}</licenseKey>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <pluginRepositories>
+        <pluginRepository>
+           <id>restlet-public</id>
+           <name>Restlet Public Repository</name>
+           <url>http://maven.restlet.com</url>
+       </pluginRepository>
+    </pluginRepositories>
+</project>
